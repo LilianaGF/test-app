@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Task</string>
+    <string name="title">Task Summary</string>
+    <string name="tag">LGF</string>
+</resources>
