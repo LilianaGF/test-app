@@ -16,15 +16,12 @@ public class DBUtil {
     public static List<Task> getTasks() {
         return tasks;
     }
-
     public static int getToDoTaskCount() {
         return ToDoTaskCount;
     }
-
     public static int getDoingTaskCount() {
         return DoingTaskCount;
     }
-
     public static int getDoneTaskCount() {
         return DoneTaskCount;
     }
@@ -40,33 +37,38 @@ public class DBUtil {
         return tasks;
     }
 
+    public static void DBGetToDoTask(TaskDB taskDBInstance, Context context){
+        GetToDoTask getToDoTask = new GetToDoTask(taskDBInstance, context);
+        getToDoTask.execute();
+    }
+
+    public static void DBGetDoingTask(TaskDB taskDBInstance, Context context){
+        GetDoingTask getDoingTask = new GetDoingTask(taskDBInstance, context);
+        getDoingTask.execute();
+    }
+
+    public static void DBGetDoneTask(TaskDB taskDBInstance, Context context){
+        GetDoneTask getDoneTask = new GetDoneTask(taskDBInstance, context);
+        getDoneTask.execute();
+    }
+
     public static void DBSaveNewTask(TaskDB taskDBInstance, Task task){
         SaveNewTask saveNewTask = new SaveNewTask(taskDBInstance, task);
         saveNewTask.execute();
     }
 
-    public static void DBGetToDoTaskCount(TaskDB taskDBInstance, Context context){
-        GetToDoTaskCount getToDoTaskCount = new GetToDoTaskCount(taskDBInstance, context);
-        getToDoTaskCount.execute();
+    public static void DBTaskCount(TaskDB taskDBInstance, Context context){
+        TaskCount TaskCount = new TaskCount(taskDBInstance, context);
+        TaskCount.execute();
     }
 
-    public static void DBGetDoingTaskCount(TaskDB taskDBInstance){
-        GetDoingTaskCount getDoingTaskCount = new GetDoingTaskCount(taskDBInstance);
-        getDoingTaskCount.execute();
-    }
-
-    public static void DBGetDoneTaskCount(TaskDB taskDBInstance){
-        GetDoneTaskCount getDoneTaskCount = new GetDoneTaskCount(taskDBInstance);
-        getDoneTaskCount.execute();
+    public static void DBDeleteTask(TaskDB taskDBInstance, Task task){
+        DeleteTask deleteTask = new DeleteTask(taskDBInstance, task);
+        deleteTask.execute();
     }
 
 
-
-
-
-
-
-
+    //-----------------------------------------------------------------------------------------------------------------
     private static class Initialize extends AsyncTask<Void, Void, Void> {
         TaskDB taskDBInstance;
         public Initialize(TaskDB taskDBInstance) {
@@ -87,6 +89,8 @@ public class DBUtil {
         }
     }
 
+
+    //-----------------------------------------------------------------------------------------------------------------
     private static class GetAllTask extends AsyncTask<Void, Void, Void> {
         TaskDB taskDBInstance;
         Context context;
@@ -106,14 +110,130 @@ public class DBUtil {
         @Override
         protected void onPostExecute(Void v)
         {
-            Log.d("LGF Broadcast ", "AllTasksReady");
+            Log.d("LGF Broadcast ", "TasksReady");
             Intent intent = new Intent();
-            intent.setAction("com.LGF.CUSTOM_INTENT.AllTasksReady");
+            intent.setAction("com.LGF.CUSTOM_INTENT.TasksReady");
             context.sendBroadcast(intent);
         }
 
     }
 
+
+    //-----------------------------------------------------------------------------------------------------------------
+    private static class GetToDoTask extends AsyncTask<Void, Void, Void> {
+        TaskDB taskDBInstance;
+        Context context;
+
+        public GetToDoTask(TaskDB taskDBInstance, Context context) {
+            this.taskDBInstance = taskDBInstance;
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            tasks = taskDBInstance.taskDAO().getToDo();
+            ToDoTaskCount = tasks.size();
+            Log.d("ToDoTaskCount", "" + ToDoTaskCount);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            Log.d("LGF Broadcast ", "TasksReady");
+            Intent intent = new Intent();
+            intent.setAction("com.LGF.CUSTOM_INTENT.TasksReady");
+            context.sendBroadcast(intent);
+        }
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------
+    private static class GetDoingTask extends AsyncTask<Void, Void, Void> {
+        TaskDB taskDBInstance;
+        Context context;
+
+        public GetDoingTask(TaskDB taskDBInstance, Context context) {
+            this.taskDBInstance = taskDBInstance;
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            tasks = taskDBInstance.taskDAO().getDoing();
+            DoingTaskCount = tasks.size();
+            Log.d("DoingTaskCount", "" + DoingTaskCount);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            Log.d("LGF Broadcast ", "TasksReady");
+            Intent intent = new Intent();
+            intent.setAction("com.LGF.CUSTOM_INTENT.TasksReady");
+            context.sendBroadcast(intent);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    private static class GetDoneTask extends AsyncTask<Void, Void, Void> {
+        TaskDB taskDBInstance;
+        Context context;
+
+        public GetDoneTask(TaskDB taskDBInstance, Context context) {
+            this.taskDBInstance = taskDBInstance;
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            tasks = taskDBInstance.taskDAO().getDone();
+            DoneTaskCount = tasks.size();
+            Log.d("DoneTaskCount", "" + DoneTaskCount);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            Log.d("LGF Broadcast ", "TasksReady");
+            Intent intent = new Intent();
+            intent.setAction("com.LGF.CUSTOM_INTENT.TasksReady");
+            context.sendBroadcast(intent);
+        }
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------
+    private static class TaskCount extends AsyncTask<Void, Void, Void> {
+        TaskDB taskDBInstance;
+        Context context;
+
+        public TaskCount(TaskDB taskDBInstance, Context context) {
+            this.taskDBInstance = taskDBInstance;
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            ToDoTaskCount = taskDBInstance.taskDAO().getToDo().size();
+            DoingTaskCount = taskDBInstance.taskDAO().getDoing().size();
+            DoneTaskCount = taskDBInstance.taskDAO().getDone().size();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {
+            Log.d("LGF Broadcast ", "TasksCountReady");
+            Intent intent = new Intent();
+            intent.setAction("com.LGF.CUSTOM_INTENT.TasksCountReady");
+            context.sendBroadcast(intent);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     private static class SaveNewTask extends AsyncTask<Void, Void, Void> {
         TaskDB taskDBInstance;
         Task task;
@@ -131,66 +251,24 @@ public class DBUtil {
         }
     }
 
-    private static class GetToDoTaskCount extends AsyncTask<Void, Void, Void> {
+    //-----------------------------------------------------------------------------------------------------------------
+    private static class DeleteTask extends AsyncTask<Void, Void, Void> {
         TaskDB taskDBInstance;
-        Context context;
+        Task task;
 
-        public GetToDoTaskCount(TaskDB taskDBInstance, Context context) {
+        public DeleteTask(TaskDB taskDBInstance, Task task) {
             this.taskDBInstance = taskDBInstance;
-            this.context = context;
+            this.task = task;
         }
 
         @Override
         protected Void doInBackground(final Void... params) {
-            ToDoTaskCount = taskDBInstance.taskDAO().getToDo().size();
-            Log.d("ToDoTaskCount", "" + ToDoTaskCount);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v)
-        {
-            Log.d("LGF Broadcast ", "ToDoTaskCountReady");
-            Intent intent = new Intent();
-            intent.setAction("com.LGF.CUSTOM_INTENT.ToDoTaskCountReady");
-            context.sendBroadcast(intent);
-        }
-
-    }
-
-    private static class GetDoingTaskCount extends AsyncTask<Void, Void, Void> {
-        TaskDB taskDBInstance;
-
-        public GetDoingTaskCount(TaskDB taskDBInstance) {
-            this.taskDBInstance = taskDBInstance;
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            DoingTaskCount = taskDBInstance.taskDAO().getDoing().size();
-            Log.d("DoingTaskCount", "" + DoingTaskCount);
+            taskDBInstance.taskDAO().deleteTask(task);
+            Log.d("LGF ", "Deleting task ");
             return null;
         }
     }
 
-    private static class GetDoneTaskCount extends AsyncTask<Void, Void, Void> {
-        TaskDB taskDBInstance;
-
-        public GetDoneTaskCount(TaskDB taskDBInstance) {
-            this.taskDBInstance = taskDBInstance;
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            DoneTaskCount = taskDBInstance.taskDAO().getDone().size();
-            Log.d("DoneTaskCount", "" + DoneTaskCount);
-            return null;
-        }
-    }
-
-
-
-
-
+    //-----------------------------------------------------------------------------------------------------------------
 
 }

@@ -16,6 +16,7 @@ import java.util.List;
 public class NewTaskFormActivity extends AppCompatActivity {
     String tag = "LGF";
 
+    //------------------------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +27,9 @@ public class NewTaskFormActivity extends AppCompatActivity {
 
         initiateTheSwitchDone();
         addListenerToTheSwitchDone();
-
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void initiateTheSeekbarPercentage(){
         SeekBar seekbarPercentage = findViewById(R.id.seekbarPercentage);
 
@@ -44,6 +45,7 @@ public class NewTaskFormActivity extends AppCompatActivity {
         TheouttxtPercentage.setText(strDefaultTaskPercentage);
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void addListenerToTheSeekbarPercentage(){
         SeekBar seekbarPercentage = findViewById(R.id.seekbarPercentage);
 
@@ -72,6 +74,7 @@ public class NewTaskFormActivity extends AppCompatActivity {
         });
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void initiateTheSwitchDone(){
         Switch switchDone = findViewById(R.id.switchDone);
         if (switchDone.isChecked()){
@@ -80,6 +83,7 @@ public class NewTaskFormActivity extends AppCompatActivity {
         }
     }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void addListenerToTheSwitchDone(){
         Switch switchDone = findViewById(R.id.switchDone);
 
@@ -101,6 +105,7 @@ public class NewTaskFormActivity extends AppCompatActivity {
         });
     }
 
+    //------------------------------------------------------------------------------------------------------------------
     public void CancelNewTask(View view) {
         Log.d(tag, "click btnCancel");
 
@@ -109,24 +114,23 @@ public class NewTaskFormActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //------------------------------------------------------------------------------------------------------------------
     public void SaveNewTask(View view) {
         Log.d(tag, "click btnSave");
 
-        // Explicit Intent by specifying its class name
-        android.content.Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-
         Task task = new Task();
 
+        //                                                  //Reading the short description.
         TextView intxtShortDescription = findViewById(R.id.intxtShortDescription);
         String strShortDescription = intxtShortDescription.getText().toString();
         task.setShortDescription(strShortDescription);
 
+        //                                                  //Reading the long description.
         TextView intxtLongtDescription = findViewById(R.id.intxtLongDescription);
         String strLongDescription = intxtLongtDescription.getText().toString();
         task.setLongDescription(strLongDescription);
 
-
+        //                                                  //Reading the percentage.
         Switch switchDone = findViewById(R.id.switchDone);
         if (switchDone.isChecked())
             task.setPercentage(100);
@@ -135,9 +139,29 @@ public class NewTaskFormActivity extends AppCompatActivity {
             task.setPercentage(seekbarPercentage.getProgress());
         }
 
+        //                                                  //Asking to the DB to save.
         TaskDB taskDBInstance = TaskDB.getTaskDB(getApplicationContext());
         DBUtil.DBSaveNewTask(taskDBInstance, task);
+
+        //                                                  //Back to main activity.
+        android.content.Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
     }
+
+   //------------------------------------------------------------------------------------------------------------------
+    public void DeleteTask(View view, Task task) {
+
+        //                                                  //Asking to the DB to save.
+        TaskDB taskDBInstance = TaskDB.getTaskDB(getApplicationContext());
+        DBUtil.DBDeleteTask(taskDBInstance, task);
+
+        //                                                  //Back to TaskList.
+        android.content.Intent intent = new Intent(getApplicationContext(), TaskListActivity.class);
+        startActivity(intent);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
 
 
 }
+/*END-ACTIVITY*/

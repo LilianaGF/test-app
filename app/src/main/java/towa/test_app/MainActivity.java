@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity
     //                                                      //tag for Log.d() method.
     final static String tag = "LGF";
 
+
+
     //------------------------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity
 
         //                                                  //To register a receiver of the broadcast
         BroadcastReceiver updateTaskCountReceiver = new UpdateTaskCountReceiver();
-        IntentFilter intentFilter = new IntentFilter("com.LGF.CUSTOM_INTENT.ToDoTaskCountReady");
+        IntentFilter intentFilter = new IntentFilter("com.LGF.CUSTOM_INTENT.TasksCountReady");
         this.registerReceiver(updateTaskCountReceiver, intentFilter);
 
         //                                                  //Initialization of the DB
@@ -66,12 +68,9 @@ public class MainActivity extends AppCompatActivity
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     private void updateTaskCount()
     {
+        //                                                  //broadcast com.LGF.CUSTOM_INTENT.TaskReady
         TaskDB taskDBInstance = TaskDB.getTaskDB(getApplicationContext());
-
-        //                                                  //broadcast com.LGF.CUSTOM_INTENT.ToDoTaskCountReady
-        DBUtil.DBGetToDoTaskCount(taskDBInstance, getApplicationContext());
-        DBUtil.DBGetDoingTaskCount(taskDBInstance);
-        DBUtil.DBGetDoneTaskCount(taskDBInstance);
+        DBUtil.DBTaskCount(taskDBInstance, getApplicationContext());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -114,8 +113,8 @@ public class MainActivity extends AppCompatActivity
         Log.d(tag, "click btnNewTask");
 
         //                                                  //Explicit Intent to start NewTaskFormActivity.
-        Intent intent1 = new Intent(getApplicationContext(), NewTaskFormActivity.class);
-        startActivity(intent1);
+        Intent intent = new Intent(getApplicationContext(), NewTaskFormActivity.class);
+        startActivity(intent);
     }
 
     //------------------------------------------------------------------------------------------------------------------
